@@ -1,4 +1,4 @@
-export default {
+export const frMsg = {
   lang: 'Français',
   hello: 'Bonjour',
   world: 'tout le monde !',

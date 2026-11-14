@@ -23,8 +23,8 @@ import Quasar from 'quasar/src/vue-plugin.js'
 import { createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 
-import en from './i18n/en'
-import fr from './i18n/fr'
+import { enMsg } from './i18n/en'
+import { frMsg } from './i18n/fr'
 
 const i18n = createI18n({
   legacy: false,
@@ -32,7 +32,7 @@ const i18n = createI18n({
   fallbackLocale: 'fr',
   missingWarn: false,
   fallbackWarn: false,
-  messages: { en: en, fr: fr }
+  messages: { en: enMsg, fr: frMsg }
 })
 
 // Import icon libraries

@@ -13,6 +13,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   // Forcer à './' pour que ça fonctionne depuis un site par directement au domaine
   base: './',
+  server: { port: 8085 },
   plugins: [
     vue({
       template: { transformAssetUrls }

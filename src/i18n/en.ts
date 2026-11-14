@@ -1,4 +1,4 @@
-export default {
+export const enMsg = {
   lang: 'English',
   hello: 'Hello',
   dark: 'Dark',

@@ -39,7 +39,7 @@ body {
 .font-def { font-family: 'Ubuntu Sans'; font-weight: 200 }
 .font-title { font-family: "Comfortaa" }
 
-.title, .title-xs, .title-sm, .title-md, .title-lg, .title-xl, .title-xxl {
+.title, .title-xxs, .title-xs, .title-sm, .title-md, .title-lg, .title-xl, .title-xxl {
   font-family: "Comfortaa"
 }
 
@@ -51,12 +51,11 @@ body {
 .fs-xl, .title-xl { font-size:  $xl }
 .fs-xxl, .title-xxl { font-size:  $xxl }
 
-.pwxxs { max-width: 10rem !important; width: 95vw !important }
-.pwxs { max-width: 20rem !important; width: 95vw !important }
-.pwsm { max-width: 30rem !important; width: 95vw !important }
-.pwmd { max-width: 40rem !important; width: 95vw !important }
-.pwlg { max-width: 50rem !important; width: 95vw !important }
-.pwxl { max-width: 90rem !important; width: 95vw !important }
+.wxs { max-width: $wxs !important; width: 100% }
+.wsm { max-width: $wsm !important; width: 100% }
+.wmd { max-width: $wmd !important; width: 100% }
+.wlg { max-width: $wlg !important; width: 100% }
+.wxl { max-width: $wxl !important; width: 100% }
 
 .tbp { background: var(--q-primary) !important; color: var(--q-tbptc) !important }
 .tbs { background: var(--q-secondary) !important; color: var(--q-tbstc) !important }

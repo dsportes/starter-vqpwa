@@ -1,4 +1,5 @@
 <template>
+<div class="column items-center"><div class="wsm">
   <div class="row items-center justify-between q-pa-sm">
     <q-btn color="negative" padding="none" size="md" icon="close" @click="coolBye"/>
     <div class="font-title fs-md">{{ $t('hello') + ' ' + $t('world') + ' -[3]- ' + appConfig.APPNAME + ' / ' + appConfig.BUILD}}</div>
@@ -14,7 +15,8 @@
   <div class="row items-center q-mt-sm justify-around">
     <img :src="superman" class="q-mr-sm" width="24px"/>
     <q-btn class="q-ma-sm primary" dense color="primary" size="md"
-      :label="darkClear" @click="swDark"/>
+      :label="$t(starter.isDark ? 'dark' : 'clear')" 
+      @click="starter.setDark(!starter.isDark)"/>
   </div>
 
   <div class="row items-center q-mt-sm justify-around">
@@ -22,7 +24,7 @@
       v-model="locOpt" :options="starter.langOptions" :label="$t('lang')" map-options/>
     <q-btn flat dense color="primary" label="Show Notification" @click="showNotif"/>
   </div>
-
+</div></div>
 </template>
 
 <script setup lang="ts" vapor>
@@ -49,9 +51,6 @@ console.log('Title :', storeFooBar.getDoc('456').title)
 
 const locOpt: Ref<LangOption> = ref(starter.curLangOption)
 watch(locOpt, (lo) => { starter.setLocale(lo.value) })
-
-const darkClear: Ref<string> = computed(() => $t(starter.isDark ? 'dark' : 'clear'))
-const swDark = () => { starter.setDark(!starter.isDark) }
 
 const dh: Ref<number> = ref(0)
 const dhs: Ref<string> = computed(() => new Date(dh.value).toISOString())

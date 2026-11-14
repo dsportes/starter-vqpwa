@@ -1,5 +1,5 @@
 <template>
-  <home-page/>
+  <home/>
   <new-version v-if="nv"/>
   <permission-box v-if="pb"/>
 </template>
@@ -10,7 +10,7 @@ import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useStarterStore } from './starter/store'
 import { setup } from './starter/util'
-import HomePage from './demo/HomePage.vue'
+import Home from './demo/Home.vue'
 import NewVersion from './starter/NewVersion.vue'
 import PermissionBox from './starter/PermissionBox.vue'
 
