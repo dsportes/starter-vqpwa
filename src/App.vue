@@ -36,6 +36,6 @@ const nv = computed(() => starter.newVersionDialog)
 
 </script>
 
-<style lang="scss" scoped>
-@use './css/app';
+<style lang="scss">
+@import './css/app';
 </style>

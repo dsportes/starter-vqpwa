@@ -1,36 +1,38 @@
 <template>
   <div class="row items-center justify-between q-pa-sm">
     <q-btn color="negative" padding="none" size="md" icon="close" @click="coolBye"/>
-    <div>{{ $t('hello') + ' ' + $t('world') + ' -[3]- ' + appConfig.APPNAME + ' / ' + appConfig.BUILD}}</div>
+    <div class="font-title fs-md">{{ $t('hello') + ' ' + $t('world') + ' -[3]- ' + appConfig.APPNAME + ' / ' + appConfig.BUILD}}</div>
   </div>
 
-  <img alt="Vue logo" :src="ano" width="32" height="32" />
-  <div class="font-title">Bonjour !</div>
-  <div class="font-mono selx btn" @click="resetDh">{{ dx.subClass('roman').name + ' ' + dhs }}</div>
+  <div class="row justify-around items-center">
+    <img alt="Vue logo" :src="ano" width="32" height="32" />
+    <div class="myprimary fs-md">{{ dx.docCl + ' - ' + starter.screenWidth + '/' + starter.screenHeight }}</div>
+    <q-btn class="q-ma-sm" flat dense color="primary"
+      :label="dhs" @click="resetDh"/>
+  </div>
 
-  <div class="row rows-center q-mt-sm">
-    <img :src="superman" class="self-start q-mr-sm q-mt-sm" width="24px"/>
-    <q-btn class="q-ma-sm primary" flat dense text-color="white" 
+  <div class="row items-center q-mt-sm justify-around">
+    <img :src="superman" class="q-mr-sm" width="24px"/>
+    <q-btn class="q-ma-sm primary" dense color="primary" size="md"
       :label="darkClear" @click="swDark"/>
   </div>
 
-  <q-select class="q-ma-sm" filled dense style="width:200px"
-    v-model="locOpt" :options="starter.langOptions" :label="$t('lang')" map-options/>
-
-  <q-btn class="q-ma-sm primary" flat dense text-color="white" 
-    label="Show Notification" @click="showNotif"/>
+  <div class="row items-center q-mt-sm justify-around">
+    <q-select filled dense style="width:200px"
+      v-model="locOpt" :options="starter.langOptions" :label="$t('lang')" map-options/>
+    <q-btn flat dense color="primary" label="Show Notification" @click="showNotif"/>
+  </div>
 
 </template>
 
 <script setup lang="ts" vapor>
-import { inject } from 'vue'
+import { ref, type Ref, computed, watch, inject } from 'vue'
+
 import Stores from '../starter/all'
 import { type LangOption } from '../starter/store'
 import { coolBye } from '../starter/util'
 
 import { dx } from './registry'
-import { ref, type Ref, computed, watch } from 'vue'
-
 import { showNotification } from '../my-register-sw'
 import superman from '../assets/img/superman.jpg'
 import ano from '../assets/img/anonymous-w.svg'
@@ -66,9 +68,8 @@ resetDh()
 </script>
 
 <style lang="scss" scoped>
-@use '../css/app';
-.selx:hover { background-color: $secondary; color: black }
-.selx { cursor:pointer !important; background-color: var(--q-primary); }
-.btn { border:1px solid black; padding: 2px; }
-.primary { background-color: var(--q-primary);}
+@import '../css/app';
+.myprimary:hover { background-color: $secondary; color: white}
+.border { border:1px solid var(--q-primary); padding: 2px; }
+.myprimary { background-color: $mdtitle; color: black}
 </style>

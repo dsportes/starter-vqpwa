@@ -221,7 +221,7 @@ if (NOTIFICATIONCLICK) self.addEventListener("notificationclick", (e: any) => {
         (windowClient: any) => windowClient.url === url
       )
       if (windowToFocus) {
-        console.log('to focus')
+        trace('Focus on ' + url, true, true)
         // If a Window tab matching the targeted URL already exists, focus that;
         windowToFocus.focus()
       } else {

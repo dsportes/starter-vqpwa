@@ -24,11 +24,12 @@ export default {
   Ce problème technique lié à la configuration empêch l'application de fonctionner.`,
   PERM_tit: 'Le navigateur bloque les "notifications"',
   PERM_info1: 'Quand elle n\'est pas en mode AVION, l\'application ne peut pas fonctionner correctement si les notifications ne sont pas autorisées par le navigateur.',
-  PERM_info2: `Vous devez modifier VOUS-MEME l'autorisation du navigateur à traiter les notifications pour cette application.
-  Il y a un bouton pour faire ça dans la BARRE D'ADRESSE.`,
+  PERM_info2: `Vous avez EXPLICITEMENT bloqué les notifications, vous seul pouvez débloquer cette autorisation pour cette application.
+  Il y a un bouton à cet effet dans la BARRE D'ADRESSE.`,
   PERM_quit1: 'J\'ai lu, je préfère quitter l\'application',
   PERM_quit2: 'J\'ai lu, je préfère recharger l\'application',
   PERM_quit3: 'J\'ai lu, je quitte l\'application',
   PERM_quit4: 'J\'ai lu, je tente de recharger l\'application',
+  PERM_answer: 'S\'il vous plait, veuillez accepter la demande de permission de votre navigateur (en haut près de la BARRE D\'ADRESSE).'
 
 }

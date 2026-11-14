@@ -1,4 +1,4 @@
-@import "quasar.variables.scss";
+@import 'quasar-variables.scss';
 
 @font-face {
   font-family: 'Comfortaa';
@@ -29,17 +29,27 @@
   font-style: italic
 }
 
+body {
+  font-family: 'Ubuntu Sans' !important; 
+  font-weight: 200;
+  font-size:  0.9rem;
+}
+
 .font-mono { font-family: 'Ubuntu Mono' }
 .font-def { font-family: 'Ubuntu Sans'; font-weight: 200 }
 .font-title { font-family: "Comfortaa" }
 
-.fs-xxs { font-size:  0.5rem }
-.fs-xs { font-size:  0.7rem }
-.fs-sm { font-size:  0.8rem }
-.fs-md { font-size:  0.9rem }
-.fs-lg { font-size:  1.0rem }
-.fs-xl { font-size:  1.3rem }
-.fs-xxl { font-size:  2rem }
+.title, .title-xs, .title-sm, .title-md, .title-lg, .title-xl, .title-xxl {
+  font-family: "Comfortaa"
+}
+
+.fs-xxs, .title-xxs { font-size:  $xxs }
+.fs-xs, .title-xs { font-size:  $xs }
+.fs-sm, .title-sm { font-size:  $sm }
+.fs-md, .title-md { font-size:  $md }
+.fs-lg, .title-lg { font-size:  $lg }
+.fs-xl, .title-xl { font-size:  $xl }
+.fs-xxl, .title-xxl { font-size:  $xxl }
 
 .pwxxs { max-width: 10rem !important; width: 95vw !important }
 .pwxs { max-width: 20rem !important; width: 95vw !important }

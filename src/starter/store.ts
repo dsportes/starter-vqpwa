@@ -18,24 +18,41 @@ export const useStarterStore = defineStore('starter', () => {
   const curLangOption: Ref<LangOption> = ref(defLangOption)
   const langOptions: Ref<LangOption[]> = ref(appConfig.LANGOPTIONS)
 
-  let i18n:any, $q:any, $t:Function, myself: any
+    // Screen
+  const isPortrait: Ref<boolean> = ref(true)
+  const screenHeight: Ref<number> = ref(0)
+  const screenWidth: Ref<number> = ref(0)
+
+  const setScreenWH = (w: number, h: number) => {
+    isPortrait.value = w < h
+    screenHeight.value = h
+    screenWidth.value = w
+  }
+
+  let i18n:any, $t:Function, myself: any
+  /* $q DOIT être reactive: on pose un watch dessus pour la largeur et la hauteur */
+  const $q: Ref<any> = ref()
 
   const init = (_i18n: any, _$q: any) => {
     i18n = _i18n
     $t = _i18n.t
-    $q = _$q
+    $q.value = _$q
 
     const lo = getLangOption(appConfig.LANG)
     Lang.set(lo.props)
     i18n.locale.value = appConfig.LANG
     curLangOption.value = lo
-    $q.dark.set(appConfig.DARK)
+    _$q.dark.set(appConfig.DARK)
     setTheme()
     myself = useStarterStore()
     declareStarterStore(myself)
+    setScreenWH(_$q.screen.width, _$q.screen.height)
+    watch(() => [$q.value.screen.width, $q.value.screen.height], () => {
+      setScreenWH($q.value.screen.width, $q.value.screen.height)
+    })
   }
 
-  const isDark: Ref<boolean> = computed(() => $q ? $q.dark.isActive : true)
+  const isDark: Ref<boolean> = computed(() => $q ? $q.value.dark.isActive : true)
 
   const getLangOption = (lang: string) : LangOption => {
     if (lang) for (const x of langOptions.value) if (x.value === lang) return x
@@ -56,7 +73,7 @@ export const useStarterStore = defineStore('starter', () => {
   const setDark = (dark: boolean) => {
     const d = isDark.value
     if ((d && dark) || (!d && !dark)) return
-    $q.dark.set(dark)
+    $q.value.dark.set(dark)
     setTheme()
   }
 
@@ -85,14 +102,9 @@ export const useStarterStore = defineStore('starter', () => {
     setPermDialog()
   }
 
-  const permState = ref(Notification.permission) // granted denied prompt
-  watch(() => Notification.permission, (p) => {
-    permState.value = p
-    setPermDialog()
-  })
   const permDialog: Ref<boolean> = ref(false)
   const setPermDialog = () => {
-    permDialog.value = hasNet.value && webpushkey.value && (permState.value !== 'granted' || errSubJSON.value) ? true : false
+    permDialog.value = hasNet.value && webpushkey.value && (Notification.permission !== 'granted' || errSubJSON.value) ? true : false
   }
 
   const getSubJSON = async () => {
@@ -106,18 +118,19 @@ export const useStarterStore = defineStore('starter', () => {
 
   if (webpushkey.value) {
     if (hasNet.value) {
-      if (permState.value === 'granted') {
+      if (Notification.permission === 'granted') {
         setTimeout(async () => { 
           await getSubJSON() }, 1)
         } 
       } else setPermDialog()
-    watch(() => [hasNet.value, permState.value, subJSON.value], async() => {
-      if (!errSubJSON.value && !subJSON.value && webpushkey.value)
+    watch(() => [hasNet.value, subJSON.value], async() => {
+      if (!errSubJSON.value && !subJSON.value && webpushkey.value && Notification.permission === 'granted')
         await getSubJSON()
     })
   }
 
-  setPermDialog()
+  if (appConfig.WEBPUSH) 
+    setPermDialog()
 
   console.log('Boot configuration done.')
 
@@ -131,10 +144,11 @@ export const useStarterStore = defineStore('starter', () => {
   }
 
   return {
-    init, langOptions, curLangOption, setLocale, isDark, setDark,
+    init, langOptions, curLangOption, setLocale, isDark, setDark, setScreenWH,
     onAppUpdate, onSwMessage, onPushMessage,
     newVersionReady, newVersionDialog,
     hasNet, setNet, 
-    permState, permDialog, errSubJSON, subJSON
+    setPermDialog, permDialog, errSubJSON, subJSON,
+    isPortrait, screenHeight, screenWidth
   }
 })

@@ -36,7 +36,7 @@ const i18n = createI18n({
 })
 
 // Import icon libraries
-import '@quasar/extras/roboto-font/roboto-font.css'
+// import '@quasar/extras/roboto-font/roboto-font.css'
 import '@quasar/extras/material-icons/material-icons.css'
 // import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
 // import '@quasar/extras/material-icons-round/material-icons-round.css'
@@ -68,7 +68,9 @@ myApp.use(createPinia())
 
 myApp.use(Quasar, {
   plugins: {}, // import Quasar plugins and add here
-  //  config: { framework: {  } }
+  /* config: { 
+    extras: [ 'roboto-font', 'material-icons']
+  } */
 })
 
 myApp.use(i18n)
