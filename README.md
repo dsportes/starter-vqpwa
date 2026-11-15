@@ -118,5 +118,5 @@ Le shell script `sh/srv.sh` lance un serveur avec des certificats SSL et permet 
 
 See [Vite Configuration Reference](https://vite.dev/config/).
 
-# Configuer une application
+# Configurer une application
 (TODO)
