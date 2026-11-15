@@ -1,77 +1,53 @@
+/* Script d'enregistrement du service-worker.
+
+Pas de CUSTOM.
+
+Ce script est directement invoqué dans index.html au chargement du <body>
+Imports neutres:
+- register-service-worker : pas de dépndances problématiques.
+- app/config.ts : aucun import
+- assats/custom.json : pur texte
+*/
+
 import { register } from 'register-service-worker'
 
-import myConfig from './app/config'
+import appConfig from './app/config'
 import customjson from './assets/custom.json?raw'
 {
   const patch: any = JSON.parse(customjson)
-  for(const p in patch) (myConfig as any)[p] = patch[p]
+  for(const p in patch) (appConfig as any)[p] = patch[p]
 }
+const DEBUG = appConfig.DEBUG
+const DUPBYE = !appConfig.DUPBYE ? '' : (appConfig.DUPBYE as any)[appConfig.LANG]
 
-const encoder = new TextEncoder()
-
-function urlFromText (text: string, type?: string) : string {
-  const blob = new Blob([encoder.encode(text)], { type: type || 'text/html' })
-  return URL.createObjectURL(blob)
-}
-
-const DEBUG = myConfig.DEBUG
-const DUPBYE = !myConfig.DUPBYE ? '' : (myConfig.DUPBYE as any)[myConfig.LANG]
-
-// export let myRegistration: ServiceWorkerRegistration
+/*******************************************************************************
+ * Exports à destination du seul starter store '/src/start/store.ts'
+ *******************************************************************************/
 let starterStore: any
+
+/* Le starter Store s'enregistre par cette function de manière à recevoir les appels:
+ - onAppUpdate : disponibilité d'une nouvelle version du W
+ - onSWMessage : réception d'un message émis par SW
+ - onPushMessage: réception d'un message reçu par push.
+*/
 export function declareStarterStore (_starterStore: any) {
   starterStore = _starterStore
 }
 
-/*
-export let _onAppUpdate: Function
-export function setOnAppUpdate(f: any) {
-  _onAppUpdate = f
+/* Usage interne pour émettre la page de de détection de double lancement */
+function urlFromText (text: string, type?: string) : string {
+  const encoder = new TextEncoder()
+  const blob = new Blob([encoder.encode(text)], { type: type || 'text/html' })
+  return URL.createObjectURL(blob)
 }
-export let _onSwMessage: Function
-export function setOnSwMessage(f: any) {
-  _onSwMessage = f
-}
-export let _onPushMessage: Function
-export function setOnPushMessage(f: any) {
-  _onPushMessage = f
-}
+
+/* Traite les messages émis par le SW, AVANT MEME que starter Store ne se soit enregistré.
+- traite le message 'STOP' émis sur détection de double lancement.
+- log localement les messages 'LOG' émis par le SW.
+Quand le starter Store est enregistré:
+- route les messages PUSH vers le hook dédié de starter Store.
+- route les messages du SW vers le hook dédié de starter Store.
 */
-
-/*
-// options: { body: 'texte', data: { url: '...' } }
-*/
-export async function showNotification (title: string, options: any) {
-  const registration = await navigator.serviceWorker.ready
-  await registration.showNotification(title, options)
-}
-
-export async function setRegistration (applicationServerKey: BufferSource) 
-  : Promise<[number, string]> {
-  const registration = await navigator.serviceWorker.ready
-  const pm = registration.pushManager
-  if (!pm) return [1, 'Cannot get pushManager']
-
-  try {
-    const sub = await pm.getSubscription()
-    if (sub) return [0, JSON.stringify(sub)]
-    else {
-      const opt: PushSubscriptionOptionsInit = { userVisibleOnly: true, applicationServerKey }
-      try {
-        const nsub = await pm.subscribe(opt)
-        return [0, JSON.stringify(nsub)]
-      } catch(e: any) {
-        return [2, e.toString()]
-      }
-    }
-  } catch(e: any) {
-    return [3, e.toString()]
-  }
-}
-
-console.log('Register SW ...')
-
-// Traite les messages émis par le SW
 navigator.serviceWorker.onmessage = async (message) => {
   try {
     if (message.data) { // { type:, payload: }
@@ -95,10 +71,14 @@ navigator.serviceWorker.onmessage = async (message) => {
 }
 
 /*
-En dev, vite génère un dv-sw.js?dev-sw en guise de service-worker script.
-Mais celui-ci contient des 'import': il faut forcer les options d'enregistrement avec { type:'module' }
+En dev, vite génère un dev-sw.js?dev-sw en guise de service-worker script.
+Celui-ci contenant des 'import', il faut forcer les options d'enregistrement avec { type:'module' }
 qui sont à indiquer dans 'registrationOptions.
+En production (après build), le script de service-worker est /my-sw.js.
+Le nom 'my-sw.js' est celui indiqué dans la configuration de vite /vite.config.ts:
+- plugIns: VitePWA, propriété 'filename'
 */
+console.log('Register SW ...')
 const sw = import.meta.env.MODE === 'production' ? './my-sw.js' : '/dev-sw.js?dev-sw'
 
 register(

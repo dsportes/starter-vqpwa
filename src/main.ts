@@ -1,41 +1,63 @@
+/* Script générique mais customisable d'amorçage de l'application
+  Invoqué directement dans le <body> de index.html.
 
-/* import de la configuration de l'application.
+Importation de la configuration de l'application.
+  - "patch" de celle-ci pour tenir compte d'une personnalisation
+    spécifique à chaque "build"
+
 Application des "patch" sur cette configuration dépendants de l'environnement d'exécution:
 - soit de "dev",
 - soit d'un "build" spécifique.
 Le fichier de "patch" est dans /src/assets/custom.json?
 */
-import myConfig from './app/config'
+
+/* Par simplification et convention:
+- la configuration est dans '/src/app/config.ts'
+- le patch à appliquer est dans '/src/assets/custom.json'.
+  Dans le script de build pour une cible donnée, un fichier spécifique
+  vient écraser ce fichier (et le rétablir après build avec celui de dev).
+*/
+import appConfig from './app/config'
 import customjson from './assets/custom.json?raw'
 {
   const patch: any = JSON.parse(customjson)
-  for(const p in patch) (myConfig as any)[p] = patch[p]
+  for(const p in patch) (appConfig as any)[p] = patch[p]
 }
 
-import langFr from 'quasar/lang/fr'
-import langEn from 'quasar/lang/en-GB'
-const locales:any = { fr: langFr, en: langEn }
-for (const lo of myConfig.LANGOPTIONS) if (lo.value !== 'en') (lo as any)['props'] = locales[lo.value]
-
+// Imports de la création de l'application, de pinia, de quasar et I18n
 import { createApp } from 'vue'
 // @ts-expect-error
 import Quasar from 'quasar/src/vue-plugin.js'
 import { createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 
+/* CUSTOM de I18n et de "localisation" de Quasar:
+  - les langues supportées dans l'application sont listées dans 'src/app/config.ts'
+  - importer les "localisations" de Quasar pour chaque langue de l'application.
+*/
+import langFr from 'quasar/lang/fr'
+import langEn from 'quasar/lang/en-GB'
+const locales:any = { fr: langFr, en: langEn }
+for (const lo of appConfig.LANGOPTIONS) if (lo.value !== 'en') (lo as any)['props'] = locales[lo.value]
+
+/* CUSTOM: importer les scripts de traduction des langues de l'application.
+  Par convention dans /src/i18n/...
+*/
 import { enMsg } from './i18n/en'
 import { frMsg } from './i18n/fr'
+const messages = { en: enMsg, fr: frMsg }
 
+/* Configuration de I18n selon les langues de l'application */
 const i18n = createI18n({
   legacy: false,
-  locale: 'fr',
-  fallbackLocale: 'fr',
+  locale: appConfig.LANG,
+  fallbackLocale: appConfig.LANG,
   missingWarn: false,
   fallbackWarn: false,
-  messages: { en: enMsg, fr: frMsg }
+  messages
 })
 
-// Import icon libraries
+/* CUSTOM: importer les librairies utilisables */
 // import '@quasar/extras/roboto-font/roboto-font.css'
 import '@quasar/extras/material-icons/material-icons.css'
 // import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
@@ -56,25 +78,30 @@ import '@quasar/extras/material-icons/material-icons.css'
 // import '@quasar/extras/animate/fadeIn.css'
 // import '@quasar/extras/animate/fadeOut.css'
 
-// Import Quasar css
+/* Import Quasar css */
 import 'quasar/src/css/index.sass'
 
+/* Import de App.vue, amorce générique:
+  - création de l'application
+  - mise à dispotion générale (provide) de la configuration de l'application
+*/
 import App from './App.vue'
-
 const myApp = createApp(App)
-myApp.provide('appConfig', myConfig)
+myApp.provide('appConfig', appConfig)
 
+/* Enregistrement de pinia et des plugins pinia et Quasar 
+Pour Quasar une configuration PEUT être étendue */
 myApp.use(createPinia())
-
 myApp.use(Quasar, {
   plugins: {}, // import Quasar plugins and add here
   /* config: { 
     extras: [ 'roboto-font', 'material-icons']
   } */
 })
-
 myApp.use(i18n)
 
+/* Amorce de l'application montage de App.vue
+  - Les initialisations de l'application sont dans son <script setup> */
 try {
   myApp.mount('#app')
 } catch(e) {

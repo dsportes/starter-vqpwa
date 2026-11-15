@@ -7,6 +7,7 @@ export const frMsg = {
   clickhere: 'Cliquer ici !',
   gotit: 'J\'ai compris !',
   later: 'Plus tard',
+  pleasewait: 'Merci d\'attentre quelques secondes ...',
 
   reload:  'Rechargement de l\'application, merci d\'attendre un peu...',
   coolbye: 'Au revoir et à bientôt !',

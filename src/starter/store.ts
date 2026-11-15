@@ -2,9 +2,7 @@ import { ref, type Ref, computed, inject, watch } from 'vue'
 import { defineStore } from 'pinia'
 
 import { Lang, setCssVar } from 'quasar'
-
-import { declareStarterStore, setRegistration } from '../my-register-sw'
-
+import { declareStarterStore } from '../my-register-sw'
 import { keyFromB64, fromUrl } from './util'
 
 export type LangOption = { value: string, label: string, flag: string, props?: any }
@@ -105,6 +103,29 @@ export const useStarterStore = defineStore('starter', () => {
   const permDialog: Ref<boolean> = ref(false)
   const setPermDialog = () => {
     permDialog.value = hasNet.value && webpushkey.value && (Notification.permission !== 'granted' || errSubJSON.value) ? true : false
+  }
+
+  const setRegistration = async (applicationServerKey: BufferSource) 
+    : Promise<[number, string]> => {
+    const registration = await navigator.serviceWorker.ready
+    const pm = registration.pushManager
+    if (!pm) return [1, 'Cannot get pushManager']
+
+    try {
+      const sub = await pm.getSubscription()
+      if (sub) return [0, JSON.stringify(sub)]
+      else {
+        const opt: PushSubscriptionOptionsInit = { userVisibleOnly: true, applicationServerKey }
+        try {
+          const nsub = await pm.subscribe(opt)
+          return [0, JSON.stringify(nsub)]
+        } catch(e: any) {
+          return [2, e.toString()]
+        }
+      }
+    } catch(e: any) {
+      return [3, e.toString()]
+    }
   }
 
   const getSubJSON = async () => {

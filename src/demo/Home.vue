@@ -6,7 +6,7 @@
   </div>
 
   <div class="row justify-around items-center">
-    <img alt="Vue logo" :src="ano" width="32" height="32" />
+    <img alt="Vue logo" :src="splash" width="32" height="32" />
     <div class="myprimary fs-md">{{ dx.docCl + ' - ' + starter.screenWidth + '/' + starter.screenHeight }}</div>
     <q-btn class="q-ma-sm" flat dense color="primary"
       :label="dhs" @click="resetDh"/>
@@ -30,14 +30,13 @@
 <script setup lang="ts" vapor>
 import { ref, type Ref, computed, watch, inject } from 'vue'
 
-import Stores from '../starter/all'
+import Stores from '../starter/allstores'
 import { type LangOption } from '../starter/store'
-import { coolBye } from '../starter/util'
+import { showNotification, coolBye } from '../starter/util'
 
 import { dx } from './registry'
-import { showNotification } from '../my-register-sw'
 import superman from '../assets/img/superman.jpg'
-import ano from '../assets/img/anonymous-w.svg'
+import splash from '../assets/img/splash-w.svg'
 
 const appConfig: any = inject('appConfig')
 const $t = inject('$t') as Function
