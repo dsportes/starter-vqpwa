@@ -3,7 +3,8 @@
 Pas de CUSTOM.
 
 Ce script est directement invoqué dans index.html au chargement du <body>
-Imports neutres:
+Ce script est invoqué indépendemment de main.ts et ne peut bénéficier d'aucun
+autre service que ceux importés ci-après qui sont "neutres" (sans dépendances):
 - register-service-worker : pas de dépndances problématiques.
 - app/config.ts : aucun import
 - assats/custom.json : pur texte
@@ -41,8 +42,12 @@ function urlFromText (text: string, type?: string) : string {
   return URL.createObjectURL(blob)
 }
 
-/* Traite les messages émis par le SW, AVANT MEME que starter Store ne se soit enregistré.
+/* On peut recevoir des messages du SW dès le register effectué.
+En conséquence il faut enregistrer le listener AVANT appel du register.
+Traite les messages émis par le SW, AVANT MEME que starter Store ne se soit enregistré.
 - traite le message 'STOP' émis sur détection de double lancement.
+  Arrête l'application en ouvrant une nouvelle location hors du domaine
+  (ce qui libère le service-worker).
 - log localement les messages 'LOG' émis par le SW.
 Quand le starter Store est enregistré:
 - route les messages PUSH vers le hook dédié de starter Store.
@@ -71,7 +76,7 @@ navigator.serviceWorker.onmessage = async (message) => {
 }
 
 /*
-En dev, vite génère un dev-sw.js?dev-sw en guise de service-worker script.
+En dev, vite génère un dev-sw.js?dev-sw (nom non configurable) en guise de service-worker script.
 Celui-ci contenant des 'import', il faut forcer les options d'enregistrement avec { type:'module' }
 qui sont à indiquer dans 'registrationOptions.
 En production (après build), le script de service-worker est /my-sw.js.
@@ -86,19 +91,16 @@ register(
   {
     registrationOptions: { type: 'module' },
     registered (registration: ServiceWorkerRegistration) {
-      // myRegistration = registration
       console.log('Service worker is registered: ', registration ? 'OK' : 'KO')
     },
 
     ready (registration: ServiceWorkerRegistration) {
-      // myRegistration = registration
       console.log('Service worker is active: ', registration ? 'OK' : 'KO')
       if (DUPBYE && registration && registration.active)
         registration.active.postMessage({ type: 'STARTING' })
     },
 
     updated (registration: ServiceWorkerRegistration) {
-      // myRegistration = registration
       console.log('Service worker is UPDATED.')
       if (starterStore)
         starterStore.onAppUpdate()

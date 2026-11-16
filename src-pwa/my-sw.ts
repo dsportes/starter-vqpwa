@@ -235,9 +235,10 @@ if (NOTIFICATIONCLICK) self.addEventListener("notificationclick", (e: any) => {
   )
 })
 
-// Exemple de customListener
+// CUSTOM : Exemple de customListener
 async function customListener (event: any) {
   // event.source.postMessage({ type: 'ECHO', msg: JSON.stringify(event.data) })
+  console.log('Message received in SW >>> type:[' + event.data.type + '] text:[' + event.data.text + ']')
 }
 
 trace('SW end', false, false)

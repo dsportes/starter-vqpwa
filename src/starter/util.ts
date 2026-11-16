@@ -58,6 +58,17 @@ export async function showNotification (title: string, options: any) {
   await registration.showNotification(title, options)
 }
 
+/* Cette fonction envoie un message au SW.
+Elle peut être employée par l'application de n'importe où.
+Exemple dans 'src/demo/Home.vue'.
+- type: permet au SW de dispatcher les messages aux handlers de chez lui.
+- text: any (dans demo, un simple string)
+*/
+export async function postMessageToSW (type: string, text: any) {
+  const registration = await navigator.serviceWorker.ready
+  await registration.active?.postMessage({ type, text })
+}
+
 /* Crée un blob URL d'une page depuis le texte fourni qui peut être 
 ensuite ouvert par: window.location.href = urlFromText(t)
 */

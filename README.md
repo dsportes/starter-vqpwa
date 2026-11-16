@@ -119,4 +119,86 @@ Le shell script `sh/srv.sh` lance un serveur avec des certificats SSL et permet 
 See [Vite Configuration Reference](https://vite.dev/config/).
 
 # Configurer une application
-(TODO)
+
+### La structure en folders
+- `/dis`t : (fixé) emplacement de la build.
+- `/public` : (fixé) ressources de fontes et des images présentes dans `index.htm`l et le `manifest` PWA.
+- `/sh` : (convention) shell scripts de build, serveur de test, distribution, etc. 
+- `/src` : (fixé)
+  - `/src/app` : (quasi fixé, pourrait être changé mais c'est déconseillé). 
+    - `./config.ts` : (fixé) options de configuration de l'application.
+  - /src/assets : (fixé) toutes les ressources en particulier citées dans les styles.
+    - `./custom.json` : (fixé) fichier de _patch_ de config.ts
+  - `/src/css` : (fixé)
+    - `./quasar-variables.scss` : (fixé) contient la déclaration des _variables_ de style.
+    - `./app.scss` : (fixé) définition des styles utilisables dans toutes les vues (dont les @font-face)
+  - `/src/i18n` : (fixé)
+    - `./fr.ts ./en-GB.ts` : un fichier par langue de l'application traduisant les termes.
+    - Ce sont des `.ts` : ils peuvent importer des fichiers secondaires localisés ici.
+  - `./starter` : (fixé) sources et composants du starter (customisables).
+    - `./allstores.ts` expose les stores.
+    - `./NewVersion.vue ./PermissionBox.vue` : composants du starter inscrits dans App.vue.
+    - `./store.ts` : le store du starter (customisable).
+    - `./util.ts` : quelques fonctions utilisées par le starter.
+  - `./App.vue` : (quasi fixé, ppeut être changé dans /index.html mais c'est déconseillé). La vue racine de l'application:
+    - script setup d'initialisation,
+    - héberge deux composants (annonce de disponibilité d'une nouvelle version et gestion de la permission de notification).
+  - `./main.ts` : (quasi fixé, peut être changé dans /index.html mais c'est déconseillé). LE script de _boot_ de l'application.
+  - `./my-register-sw.ts` : (peut être changé dans /index.html). Le script d'enregistrement du script de service-worker.
+- `/src-pwa/my-sw.ts` : emplacement et nom déclaré dans `vite.config.ts` SANS le mettre dans `/src`.
+  - le nom `my-sw` figure aussi dans `my-register-sw.ts`
+  - le changement d'emplacement / nom est déconseillé.
+- `/index.html` : (fixé), le _template_ de la page de l'application.
+
+Les fichiers suivants contribuent à la configuration:
+- `/package.json` : customisé par ajout de modules et par son entête.
+- `/READEME.md` : ce fichier.
+- `/vite-config.ts` : la configuration de vite.
+  - la section manifest est à customiser.
+  - le reste n'a pas de l'être.
+
+Les fichiers suivants n'ont pas lieu dêtre ajustés:
+- `./pnpm...`
+- `./tsconfig...`
+
+### Fontes
+Les fichiers de fontes sont à installer dans `/public/fonts`.
+
+    /public/fonts/UbuntuSans_wdth,wght_.woff2
+
+> Attention: les noms des fichiers ne doivent contenir QUE des caractères qui passent tels quels en URL (ni espace, ni `[` ...): ils sont mal traduits en build et sont indispobles _off line_.
+
+Pour chaque fichier, une entrée dans /src/css/app.css donne son font_face:
+
+    @font-face {
+      font-family: 'Ubuntu Sans';
+      src: url(/fonts/UbuntuSans_wdth,wght_.woff2) format("woff2-variations");
+      font-style: normal
+    }
+
+### Icônes et images obligatoires
+
+Dans `/public`
+- `favicon.ico`
+- `pwa-192x192.png`  `pwa-512x512.png`
+
+Les dernières citées son celles mentionnées dans `/vite-config.ts >>> plugins >>> VitePWA >>> manifest >>> icons` 
+
+    "icons": [
+      { "src": "pwa-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+      { "src": "pwa-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+
+**Tailles obligatoires** : les formats 192x192 et 512x512 sont indispensables pour que Chrome et Android valident le manifeste et proposent l'installation.
+
+**Attribut maskable** : ceci permet à Android d'adapter l'icône à différentes formes (cercle, carré arrondi) sans couper le logo. Gardez une marge de sécurité autour du visuel principal.
+
+Les autres images / icônes sont à placer dans `/src/assets/img` (`img` est libre voire absent).
+
+On y trouve pour la démo:
+- deux images de splash d'attente durant l'initialisation de l'application,
+- un logo et un superman pour illustrer leur usage dans une vue.
+
+### /src/app/config.ts
+
+### Liste des customisations à effectuer
