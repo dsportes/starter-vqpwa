@@ -40,7 +40,7 @@ for (const lo of appConfig.LANGOPTIONS) if (lo.value !== 'en') (lo as any)['prop
 */
 import { enMsg } from './i18n/en'
 import { frMsg } from './i18n/fr'
-const messages = { en: enMsg, fr: frMsg }
+export const messages: any = { en: enMsg, fr: frMsg }
 
 /* Configuration de I18n selon les langues de l'application */
 const i18n = createI18n({
@@ -82,7 +82,6 @@ import 'quasar/src/css/index.sass'
 */
 import App from './App.vue'
 const myApp = createApp(App)
-myApp.provide('appConfig', appConfig)
 
 /* Enregistrement de pinia et des plugins pinia et Quasar 
 Pour Quasar une configuration PEUT être étendue */

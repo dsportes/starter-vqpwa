@@ -41,6 +41,7 @@ Les customisations sont:
 import { ref, type Ref, inject, provide, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { appConfig } from './app/config'
 import { useStarterStore } from './starter/store'
 import { setupUtil, sleep } from './starter/util'
 
@@ -56,9 +57,6 @@ import { test } from './demo/registry.ts'
 
 // Variable de protection contre l'affichage lors de l'initialisation
 const initdone: Ref<boolean> = ref(false)
-
-// Acquisition de la configuration de l'application
-const appConfig: any = inject('appConfig')
 
 // Style de l'image de splash selon le mode DARK ou non : facultatif
 const bg = 'splash-' + (appConfig['DARK'] ? 'w' : 'b')
@@ -78,7 +76,7 @@ const starter = useStarterStore()
 starter.init(i18n, $q)
 
 // Initialisation du module "util" du starter
-setupUtil(starter, $t, appConfig)
+setupUtil(starter, $t)
 
 /* Variables de contrôle d'ouverure des deux dialogues:
   - de demande de permissions de notification.

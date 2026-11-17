@@ -27,21 +27,20 @@ const appConfig: any = {}
 }
 */
 
-// Initilisations statiues du module
+import { appConfig } from '../app/config'
+
+// Initialisations statiues du module
 const encoder = new TextEncoder()
 // @ts-expect-error
 const p2 = [1, 0, 0, 0, 0, 0]; for (let i = 1; i < 6; i++) p2[i] = p2[i - 1] * 256
 
-
 // Variables disponibles APRES initialisation "setupUtil"
-let appConfig: any
 let boot: any
 let $t: Function
 
 /* Fonction (qui pourrait être async) d'initialisation exécutée sous 
 <script setup> */
-export function setupUtil (_boot: any, _$t: Function, _appConfig: any) {
-  appConfig = _appConfig
+export function setupUtil (_boot: any, _$t: Function) {
   $t = _$t
   boot = _boot
 }
@@ -174,4 +173,18 @@ export function fromUrl (s: string) : string {
 export function sleep (delay: number) : Promise<void> {
   const d = delay < 0 ? 0 : delay
   return new Promise((resolve: Function) => { setTimeout(() => resolve(), d) })
+}
+
+/* Retourne la concaténation des buffer */
+export function concat (views: ArrayBufferView[]) {
+  let length = 0
+  for (const v of views) length += v.byteLength
+  const buf = new Uint8Array(length)
+  let offset = 0
+  for (const v of views) {
+      const uint8view = new Uint8Array(v.buffer, v.byteOffset, v.byteLength)
+      buf.set(uint8view, offset)
+      offset += uint8view.byteLength
+  }
+  return buf
 }
