@@ -121,14 +121,22 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 # Configurer une application
 
 ### La structure en folders
-- `/dis`t : (fixé) emplacement de la build.
+- `/dist` : (fixé) emplacement de la build.
+- `/dsh` : (libre) : scripts et ressources de distribution.
+  - `./build.sh ./build.ps1` : shell scripts de build. Le premier argument est le code de la cible de distribution (par exemple d1)
+  - `./srv.sh ./srv.ps1` : shell scripts de lancement d'un serveur Web simple simulant le CDN externe.
+  - `./depl.sh ./depl.ps1` : shell scripts de déploiement de la distribution dans un directory (passé en premier argument) en y préservant son directory `.git` et son fichier `README.md`
+  - `/dsh/d1` : ressources de _patch_ spécifiques à la distribution `d1`.
+    - `./config.json` : (fixé) patch de la configuration pour la distribution `d1`.
+    - `./about.txt` : (fixé) fichier spécifique de `d1`.
+  - `/dsh/tmp` : (fixé) directory de travail des shell scripts.
 - `/public` : (fixé) ressources de fontes et des images présentes dans `index.htm`l et le `manifest` PWA.
-- `/sh` : (convention) shell scripts de build, serveur de test, distribution, etc. 
 - `/src` : (fixé)
   - `/src/app` : (quasi fixé, pourrait être changé mais c'est déconseillé). 
+    - `./themes.ts` : (fixé) pour isoler la définition des thèmes dans un fichier distinct.
     - `./config.ts` : (fixé) options de configuration de l'application.
-  - /src/assets : (fixé) toutes les ressources en particulier citées dans les styles.
-    - `./custom.json` : (fixé) fichier de _patch_ de config.ts
+  - `/src/assets` : (fixé) toutes les ressources en particulier citées dans les styles.
+    - `./custom.json` : (fixé) fichier de _patch_ de `config.ts`.
   - `/src/css` : (fixé)
     - `./quasar-variables.scss` : (fixé) contient la déclaration des _variables_ de style.
     - `./app.scss` : (fixé) définition des styles utilisables dans toutes les vues (dont les @font-face)
@@ -199,6 +207,62 @@ On y trouve pour la démo:
 - deux images de splash d'attente durant l'initialisation de l'application,
 - un logo et un superman pour illustrer leur usage dans une vue.
 
-### /src/app/config.ts
+### `/src/app/config.ts`
+Ce fichier fixe une liste de _constantes_ de configuration accessibles dans le code.
 
-### Liste des customisations à effectuer
+Afin qu'il puisse être _patché_ pour chaque distribution, le fichier `/src/assets/custom.json` contient la surcharge des constantes devant être appliquées pour une distribution donnée: le shell script `dsh/build.sh` (ou `.ps1`) copie le fichier approprié.
+
+Le fichier `/src/app/themes.ts` ne contient _que_ la constante `THEMES`, juste pour que `config.ts` soit plus léger à gérer.
+
+Voir les commentaires dans `config.ts` pour chaque constante.
+
+## Synthèse: liste des customisations à effectuer
+`/src/app/config.ts`
+- les _langues_ supportées par l'application sont spécifiées ici.
+
+`/src/main.ts`
+- les langues supportées sont à configurer: création des fichiers de traduction dans `/src/i18n`.
+- import d'extras de Quasar selon les besoins.
+- à la rigueur ajuster les plugins de Quasar (par défaut aucun) et la configuration de Quasar (par défaut vide).
+
+`/index.html`
+- ajuster le titre.
+- modifier / ajouter des tags `<meta>`
+
+`/src/assets`
+- inscrire les ressources spécifiques de l'application.
+
+`/src/public`
+- inscrire les fichiers d'icônes citès dans `index.html` et le manifeste.
+- modifier / ajouter des fichiers de fontes.
+- changer le `favicon.ico`.
+- changer le `about.txt`.
+
+`/src/i18n`
+- inscrire les fichiers de traduction.
+- rectifier si souhaité les messages du _starter_.
+
+`/src/css`
+- `quasar-variables.scss` : si les styles de l'application ont besoin de variables, les citer ici.
+- `app.css` : 
+  - ajuster la définition des `@font-face` en cas d'ajouts / changements de fontes.
+  - déclarer les styles spécifiques de l'application.
+
+`/src/my-register-sw.ts` : a priori rien à changer.
+
+`/src-pwa/my-sw.ts`
+- ajuster éventuellement la fonction `objectToNotification()`.
+- ajuster éventuellement la fonction `urlFromNotification()`.
+- ajuster / remplacer la fonction `customListener()` s'il y en a des listeners spécifiques.
+
+`/src/App.vue`
+- fixer la _home page_ de l'application.
+- importer les modules à initialiser et ajouter l'invocation de leurs fonctions `init()`.
+- ajuster ou supprimer le message d'attente et l'image de splash.
+
+`/src/...`
+- organiser et écrire les modules et vues de l'application.
+
+`/src/starter`
+- `./allstores.ts` : importer et initialiser les _stores_ de l'application.
+- `./stores.ts` : déclarer les _hooks_ de l'application `onSwMessage onPushMessage`.

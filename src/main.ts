@@ -17,12 +17,7 @@ Le fichier de "patch" est dans /src/assets/custom.json?
   Dans le script de build pour une cible donnée, un fichier spécifique
   vient écraser ce fichier (et le rétablir après build avec celui de dev).
 */
-import appConfig from './app/config'
-import customjson from './assets/custom.json?raw'
-{
-  const patch: any = JSON.parse(customjson)
-  for(const p in patch) (appConfig as any)[p] = patch[p]
-}
+import { appConfig } from './app/config'
 
 // Imports de la création de l'application, de pinia, de quasar et I18n
 import { createApp } from 'vue'

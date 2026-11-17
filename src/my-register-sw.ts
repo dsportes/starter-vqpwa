@@ -12,12 +12,7 @@ autre service que ceux importés ci-après qui sont "neutres" (sans dépendances
 
 import { register } from 'register-service-worker'
 
-import appConfig from './app/config'
-import customjson from './assets/custom.json?raw'
-{
-  const patch: any = JSON.parse(customjson)
-  for(const p in patch) (appConfig as any)[p] = patch[p]
-}
+import { appConfig } from './app/config'
 const DEBUG = appConfig.DEBUG
 const DUPBYE = !appConfig.DUPBYE ? '' : (appConfig.DUPBYE as any)[appConfig.LANG]
 

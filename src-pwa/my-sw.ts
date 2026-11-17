@@ -1,21 +1,17 @@
 declare const self: ServiceWorkerGlobalScope &
   typeof globalThis & { skipWaiting: () => void };
 
+  
+const foo = '1'
+
 import { decode } from '@msgpack/msgpack'
 
-import myConfig from '../src/app/config'
-import customjson from '../src/assets/custom.json?raw'
-{
-  const patch: any = JSON.parse(customjson)
-  for(const p in patch) (myConfig as any)[p] = patch[p]
-}
+import { appConfig } from '../src/app/config'
 
-const truc = 3
-
-const HASDUPBYE = myConfig.DUPBYE ? true : false
-const NOTIFICATIONCLICK = myConfig.NOTIFICATIONCLICK
-const DEBUG = myConfig.DEBUG
-const WEBPUSH = myConfig.WEBPUSH
+const HASDUPBYE = appConfig.DUPBYE ? true : false
+const NOTIFICATIONCLICK = appConfig.NOTIFICATIONCLICK
+const DEBUG = appConfig.DEBUG
+const WEBPUSH = appConfig.WEBPUSH
 
 function u8ToB64 (u8: Uint8Array | null | undefined) : string {
   // @ts-expect-error
@@ -101,15 +97,6 @@ if (WEBPUSH) self.addEventListener('push', async (event: any) => {
     const y = JSON.parse(x)
     buf = y.body
   } else buf = x
-  /* buf : objet "message" sérialisé en base64
-  const message = {
-    org: 'demo',
-    title: 'myApp - demo'
-    url: 'url d'ouverture de myApp avec ?options'
-    body: 'texte donné par l'appli',
-    defs: [a/v/c c/d/e ...]
-  }
-  */
   try {
     // @ts-expect-error
     const windowClients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
