@@ -28,6 +28,7 @@ const appConfig: any = {}
 */
 
 import { appConfig } from '../app/config'
+import { sha256 } from 'js-sha256'
 
 // Initialisations statiues du module
 const encoder = new TextEncoder()
@@ -187,4 +188,11 @@ export function concat (views: ArrayBufferView[]) {
       offset += uint8view.byteLength
   }
   return buf
+}
+
+export function shaS (x: any) {
+  const u8 = new Uint8Array(sha256.arrayBuffer(x))
+  // return toUrl(keyToB64(u8.subarray(3, 18)))
+  const s = keyToB64(u8.subarray(3, 18))
+  return s.replace(/\+/g, '-').replace(/\//g, '_')
 }

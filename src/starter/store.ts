@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 
 import { Lang, setCssVar } from 'quasar'
 import { declareStarterStore } from '../my-register-sw'
-import { keyFromB64, fromUrl } from './util'
+import { keyFromB64, fromUrl, shaS } from './util'
 
 /* Options d'une langue:
   - value: son code (fr, en-GB ...)
@@ -18,6 +18,7 @@ export type SubsToken = {
   // si les deux sont vides, aucune demande n'a jamais été faite
   json: string, // Si non vide, le token valide
   err: string // le code d'erreur à l'obtention ou vide si OK. 
+  shaS: string // shaS du endpoint
 }
 
 export const useStarterStore = defineStore('starter', () => {
@@ -122,7 +123,7 @@ export const useStarterStore = defineStore('starter', () => {
   sinon on peut l'obtenir par getSubsToken() mais en cas de besoin de création
   nécessite un appel depuis un <script setup> (quoi que ?).
   *****************************************************************************************/
-  const subsToken : Reactive<SubsToken> = reactive({json: '', err: ''})
+  const subsToken : Reactive<SubsToken> = reactive({json: '', err: '', shaS: ''})
 
   /* Retourne si le net est disponible ou qu'on est en mode "avion" */
   const hasNet: Ref<boolean> = ref(true)
@@ -140,6 +141,7 @@ export const useStarterStore = defineStore('starter', () => {
     const pm = registration.pushManager
     if (!pm) { 
       subsToken.json = ''
+      subsToken.shaS = ''
       subsToken.err = 'Cannot get pushManager'
       console.log('subs token KO: ' + subsToken.err)
       return subsToken
@@ -148,6 +150,7 @@ export const useStarterStore = defineStore('starter', () => {
       const sub = await pm.getSubscription()
       if (sub) { 
         subsToken.json = JSON.stringify(sub)
+        subsToken.shaS = shaS(sub.endpoint)
         subsToken.err = ''
         console.log('subs token OK: ' + subsToken.json)
         return subsToken
@@ -156,17 +159,20 @@ export const useStarterStore = defineStore('starter', () => {
       try {
         const sub = await pm.subscribe(opt)
         subsToken.json = JSON.stringify(sub)
+        subsToken.shaS = shaS(sub.endpoint)
         subsToken.err = ''
         console.log('subs token OK: ' + subsToken.json)
         return subsToken
       } catch(e: any) {
         subsToken.json = ''
+        subsToken.shaS = ''
         subsToken.err = e.toString()
         console.log('subs token KO: ' + subsToken.err)
         return subsToken
       }
     } catch(e: any) {
       subsToken.json = ''
+      subsToken.shaS = ''
       subsToken.err = e.toString()
       console.log('subs token KO: ' + subsToken.err)
       return subsToken
