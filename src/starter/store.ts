@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import { Lang, setCssVar } from 'quasar'
 import { declareStarterStore } from '../my-register-sw'
 import { keyFromB64, fromUrl, shaS } from './util'
+import { appConfig } from '../app/config'
 
 /* Options d'une langue:
   - value: son code (fr, en-GB ...)
@@ -22,8 +23,6 @@ export type SubsToken = {
 }
 
 export const useStarterStore = defineStore('starter', () => {
-  // PRIVATE
-  const appConfig:any = inject('appConfig')
   // PRIVATE: clé web-push en binaire
   const webpushkey: Ref<BufferSource | undefined> = ref(appConfig.WEBPUSH ? keyFromB64(fromUrl(appConfig.WEBPUSH)) as BufferSource : undefined)
 
