@@ -48,11 +48,6 @@ export const useStarterStore = defineStore('starter', () => {
   /* Largeur / hauteur de la windo (reactive) */
   const { width, height } = useWindowSize ()
 
-  /* PRIVATE : 
-  - myself est la référence au store lui-même depuis l'intérieur APRES init() 
-  */
-  let i18n:any, $t:Function, myself: any
-
   /* SEMI-PRIVATE: invoquée uniquement dans App.vue dans son <script setup> */
   const init = () => {
     const lo = getLangOption(appConfig.LANG)
