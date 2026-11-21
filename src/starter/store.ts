@@ -1,10 +1,10 @@
-import { ref, type Ref, computed, inject, watch, reactive, type Reactive } from 'vue'
+import { ref, type Ref, computed, watch, reactive, type Reactive } from 'vue'
 import { usePermission, useWindowSize } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
 import { Lang, setCssVar } from 'quasar'
 import { declareStarterStore } from '../my-register-sw'
-import { keyFromB64, fromUrl, shaS } from './util'
+import { i18n, $q, $t, starter, keyFromB64, fromUrl, shaS } from './util'
 import { appConfig } from '../app/config'
 
 /* Options d'une langue:
@@ -52,27 +52,21 @@ export const useStarterStore = defineStore('starter', () => {
   - myself est la référence au store lui-même depuis l'intérieur APRES init() 
   */
   let i18n:any, $t:Function, myself: any
-  /* $q DOIT être reactive: on pose un watch dessus pour la largeur et la hauteur */
-  const $q: Ref<any> = ref()
 
   /* SEMI-PRIVATE: invoquée uniquement dans App.vue dans son <script setup> */
-  const init = (_i18n: any, _$q: any) => {
-    i18n = _i18n
-    $t = _i18n.t
-    $q.value = _$q
-
+  const init = () => {
     const lo = getLangOption(appConfig.LANG)
     Lang.set(lo.props)
     i18n.locale.value = appConfig.LANG
     curLangOption.value = lo
-    _$q.dark.set(appConfig.DARK)
+    $q.dark.set(appConfig.DARK)
     setTheme()
-    myself = useStarterStore()
-    declareStarterStore(myself)
+    // myself = useStarterStore()
+    declareStarterStore(starter)
   }
 
   /* Retourne true si le mode sombre est actif (réactif) */
-  const isDark: Ref<boolean> = computed(() => $q ? $q.value.dark.isActive : true)
+  const isDark = () =>  $q.dark.isActive
 
   /* Retourne l'option de la langue citée, ou celle par défaut si elle n'est pas installée */
   const getLangOption = (lang: string) : LangOption => {
@@ -94,17 +88,17 @@ export const useStarterStore = defineStore('starter', () => {
 
   /* Passe en mode sombre / clair */
   const setDark = (dark: boolean) => {
-    const d = isDark.value
+    const d = $q.dark.isActive
     if ((d && dark) || (!d && !dark)) return
-    $q.value.dark.set(dark)
+    $q.dark.set(dark)
     setTheme()
   }
 
   // PRIVATE
   const setTheme = () => {
-    const d = isDark.value
+    const d = $q.dark.isActive ? 0 : 1
     const t = appConfig.THEMES as any
-    for(const c in t) setCssVar(c, t[c][d ? 0 : 1])
+    for(const c in t) setCssVar(c, t[c][d])
   }
 
   /* SEMI-PRIVATE: model d'ouverture du dialogue NewVersion.vue (inclus dans App.vue uniquement) */
@@ -218,22 +212,13 @@ export const useStarterStore = defineStore('starter', () => {
 
   console.log('Boot configuration done.')
 
-  // Hooks de l'application à définir
-  const onSwMessage = async (messageData: any)=> {
-    console.log(messageData.type)
-  }
-
-  const onPushMessage = async (messageData: any)=> {
-    console.log(messageData.type)
-  }
-
   return {
     // SEMI-PRIVATE
     init, 
     newVersionDialog, permDialog, notificationAccess, subsToken, 
-    onAppUpdate, onSwMessage, onPushMessage, // Hooks invoqués par register-sw
+    onAppUpdate, // Hook invoqué par register-sw
 
-    langOptions, curLangOption, setLang, 
+    curLangOption, setLang, 
     isDark, setDark, 
     width, height,
     hasNet, setNet, getSubsToken

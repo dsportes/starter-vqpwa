@@ -30,6 +30,16 @@ export function declareStarterStore (_starterStore: any) {
   starterStore = _starterStore
 }
 
+let onSwMessage: Function
+export function declareOnSwMessage (f: Function) {
+  onSwMessage = f
+}
+
+let onPushMessage: Function
+export function declareOnPushMessage (f: Function) {
+  onPushMessage = f
+}
+
 /* Usage interne pour émettre la page de de détection de double lancement */
 function urlFromText (text: string, type?: string) : string {
   const encoder = new TextEncoder()

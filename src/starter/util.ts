@@ -30,20 +30,37 @@ const appConfig: any = {}
 import { appConfig } from '../app/config'
 import { sha256 } from 'js-sha256'
 
+export let starter: any
+export let $t: Function
+export let i18n: any
+export let $q: any
+
+/* Fonction d'initialisation exécutée sous <script setup> de App.vue*/
+export function setupUtil (_i18n: any, _$q: any, _$t: Function, _starter: any) {
+  i18n = _i18n
+  $q = _$q
+  $t = _$t
+  starter = _starter
+}
+
+
 // Initialisations statiues du module
 const encoder = new TextEncoder()
 // @ts-expect-error
 const p2 = [1, 0, 0, 0, 0, 0]; for (let i = 1; i < 6; i++) p2[i] = p2[i - 1] * 256
 
-// Variables disponibles APRES initialisation "setupUtil"
-let boot: any
-let $t: Function
-
-/* Fonction (qui pourrait être async) d'initialisation exécutée sous 
-<script setup> */
-export function setupUtil (_boot: any, _$t: Function) {
-  $t = _$t
-  boot = _boot
+/* Retourne la définition du message de clé key
+SANS interprétation des ${} et '' si non trouvé dans la langue courante ou par défaut */
+export function hasMessage (key: string) : string {
+  let lg = starter.curLangOption.value
+  const m = i18n.messages.value
+  let v = m[lg]
+  if (v && v[key]) return v[key]
+  if (lg !== i18n.fallbackLocale.value) {
+    v = m[i18n.fallbackLocale.value]
+    return v && v[key] ? v[key] : ''
+  } 
+  return ''
 }
 
 /* Cette fonction affiche une notification.

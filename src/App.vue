@@ -38,7 +38,7 @@ Les customisations sont:
 </template>
 
 <script setup lang="ts" vapor>
-import { ref, type Ref, inject, provide, computed, onMounted } from 'vue'
+import { ref, type Ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { appConfig } from './app/config'
@@ -50,7 +50,7 @@ import PermissionBox from './starter/PermissionBox.vue'
 
 /* CUSTOM: 
   - imorter la "home page" de l'application
-  - importer les modules devant être intialisés
+  - importer (ou dans Home.vue) les modules devant être intialisés
 */
 import Home from './demo/Home.vue'
 import { test } from './demo/registry.ts'
@@ -65,18 +65,14 @@ const bg = 'splash-' + (appConfig['DARK'] ? 'w' : 'b')
 const i18n = useI18n()
 const $q = useQuasar()
 const $t = i18n.t
-
-// Mise à dispositiion générale des vues et stores
-provide('i18n', i18n)
-provide('$t', $t)
-provide('$q', $q)
-
 // Acquisition du Store du starter et son initialisation
 const starter = useStarterStore()
-starter.init(i18n, $q)
 
 // Initialisation du module "util" du starter
-setupUtil(starter, $t)
+setupUtil(i18n, $q, $t, starter)
+
+// APRES le setupUtil
+starter.init()
 
 /* Variables de contrôle d'ouverure des deux dialogues:
   - de demande de permissions de notification.
@@ -92,8 +88,7 @@ onMounted (async () => {
     - aux injections appConfig, $t, $q et I18n
   */
 
-  test() // exemple de demo
-  
+  await starter.getSubsToken()
   await sleep(300) // facultatif pour avoir le temps de voir l'animation du splash
   
   /* Déclenche l'affichage de la "home page" de l'application 
